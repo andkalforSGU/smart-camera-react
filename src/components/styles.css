@@ -1,0 +1,26 @@
+#camera {
+    width: 640px;
+    height: 480px;
+
+    position: relative;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+
+    /* transform: scale(2, 2); */
+}
+
+.camera_button {
+    
+}
+
+.predict {
+    background: rgba(0, 255, 0, 0.158);
+    border: 1px dashed #fff;
+    z-index: 10;
+    position:absolute;
+}
