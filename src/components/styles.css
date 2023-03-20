@@ -1,26 +1,32 @@
 #camera {
-    width: 640px;
-    height: 480px;
+  width: 640px;
+  height: 480px;
 
-    position: relative;
+  position: relative;
 
-    display: flex;
+  display: flex;
 
-    justify-content: center;
-    align-items: center;
+  justify-content: center;
+  align-items: center;
 
-    overflow: hidden;
+  overflow: hidden;
 
-    /* transform: scale(2, 2); */
+  transform: scale(1.6, 1.6);
 }
 
-.camera_button {
-    
+.coco-predict {
+  background: rgba(0, 255, 0, 0.158);
+  border: 1px dashed #fff;
+  z-index: 10;
+  position: absolute;
 }
 
-.predict {
-    background: rgba(0, 255, 0, 0.158);
-    border: 1px dashed #fff;
-    z-index: 10;
-    position:absolute;
+.movement-predict {
+  background: rgb(0, 119, 255);
+  border-radius: 100%;
+  width: 3px;
+  height: 3px;
+
+  z-index: 15;
+  position: absolute;
 }

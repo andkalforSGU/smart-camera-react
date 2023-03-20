@@ -1,35 +1,63 @@
 import { useCallback, useEffect, useState } from "react";
-import { getCocoSsdLoadedModel } from "../mlUtils.js/getCocoSsd";
-import { getPredict } from "../mlUtils.js/getPredict";
+import { getCocoSsdLoadedModel } from "../mlUtils.js/coco/getCocoSsd";
+import { getMovementModel } from "../mlUtils.js/movement/getMovementModel";
+import { getCocoPredict } from "../mlUtils.js/coco/getCocoPredict";
+import { getMovementPredict } from "../mlUtils.js/movement/getMovementPredict";
 
-export const useCam = ({ isCameraEnabled, setPredictions }) => {
-    const [model, setModel] = useState(null);
+export const useCam = async ({
+  isCameraEnabled,
+  setCocoPredictions,
+  setMovementPredictions,
+}) => {
+  const [cocoModel, setCocoModel] = useState(null);
+  const [movementModel, setMovementCocoModel] = useState(null);
+  const [videoElem, setVideoElem] = useState(null);
 
-    useEffect(() => {
-        getCocoSsdLoadedModel()
-            .then(model => setModel(model))
-    }, [])
+  useEffect(() => {
+    getCocoSsdLoadedModel().then((cocoModel) => setCocoModel(cocoModel));
+    getMovementModel().then((movementModel) =>
+      setMovementCocoModel(movementModel)
+    );
+  }, []);
 
-    const logic = useCallback(() => {
-        const video = document.getElementById('webcam');
+  const logic = () => {
+    const video = document.getElementById("webcam");
 
-        if (!video) return;
+    if (!video) return;
 
-        const constraints = {
-            video: true
-        };
+    const constraints = {
+      video: true,
+    };
 
-        navigator.mediaDevices.getUserMedia(constraints)
-            .then((stream) => {
-                video.srcObject = stream;
-                video.addEventListener('loadeddata', async () => {
-                    await getPredict({ model, video, setPredictions })
-                });
-            });
-    }, [model, setPredictions])
+    navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+      video.srcObject = stream;
+      video.addEventListener("loadeddata", async () => {
+        setVideoElem(video);
+      });
+    });
+  };
 
-    useEffect(() => {
-        if (!isCameraEnabled || !model) return;
-        logic();
-    }, [isCameraEnabled, model, logic])
-}
+  useEffect(() => {
+    if (!isCameraEnabled || !cocoModel || !movementModel) return;
+    logic();
+  }, [isCameraEnabled, cocoModel, movementModel]);
+
+  useEffect(() => {
+    if (!videoElem) return;
+
+    let framing = true;
+
+    const framingFunc = () => {
+      if (!framing) return;
+
+      getCocoPredict({ cocoModel, videoElem, setCocoPredictions });
+      getMovementPredict({ movementModel, videoElem, setMovementPredictions });
+
+      window.requestAnimationFrame(framingFunc);
+    };
+
+    framingFunc();
+
+    return () => (framing = false);
+  }, [videoElem]);
+};
